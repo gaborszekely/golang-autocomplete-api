@@ -76,7 +76,9 @@ func GetWords(node *TrieNode, prefix string) []string {
 	response := make([]string, 0)
 
 	for _, el := range res {
-		response = append(response, el.Response)
+		if el.Response != prefix {
+			response = append(response, el.Response)
+		}
 	}
 
 	return response
