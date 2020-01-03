@@ -40,7 +40,7 @@ func handleType(w http.ResponseWriter, r *http.Request, wordTrie *autocomplete.T
 
 	} else if isWordEnd {
 		// If word has been typed, add to word Trie, return sentence suggestions
-		autocomplete.AddWord(wordTrie, getLastWord(phrase[0:len(phrase)-1]))
+		autocomplete.AddWord(wordTrie, getLastWord(phrase))
 		apiResponse := Response{phrase, []string{}} // TODO - Implement sentence suggestions
 		json.NewEncoder(w).Encode(apiResponse)
 		updateTrie(collection, wordTrie)
@@ -48,7 +48,11 @@ func handleType(w http.ResponseWriter, r *http.Request, wordTrie *autocomplete.T
 	} else if isSentenceEnd {
 		// If sentence has been typed, add to sentence Trie
 		// TODO - Implement sentence trie
+		autocomplete.AddWord(wordTrie, getLastWord(phrase))
 		apiResponse := Response{phrase, []string{}} // TODO - Implement sentence suggestions
+		json.NewEncoder(w).Encode(apiResponse)
+	} else {
+		apiResponse := Response{phrase, []string{}}
 		json.NewEncoder(w).Encode(apiResponse)
 	}
 }
@@ -87,10 +91,12 @@ func updateTrie(collection *mongo.Collection, wordTrie *autocomplete.TrieNode) {
 }
 
 func getLastWord(phrase string) string {
-	chars := []rune(phrase)
+	var re = regexp.MustCompile(`[\.\?\!\,]?\s?$`)
+	s := re.ReplaceAllString(phrase, "")
+	chars := []rune(s)
 	word := ""
 	for i := len(chars) - 1; i >= 0; i-- {
-		char := string(chars[i])
+		char := string(s[i])
 		if char == " " {
 			break
 		}
@@ -100,12 +106,12 @@ func getLastWord(phrase string) string {
 }
 
 func getIsSentenceEnd(phrase string) bool {
-	match, _ := regexp.MatchString("\\.\\s$", phrase)
+	match, _ := regexp.MatchString("[\\.\\?\\!]\\s$", phrase)
 	return match
 }
 
 func getIsWordEnd(phrase string) bool {
-	match, _ := regexp.MatchString("[^\\.]\\s$", phrase)
+	match, _ := regexp.MatchString("[^\\.\\!\\?]\\s$", phrase)
 	return match
 }
 
