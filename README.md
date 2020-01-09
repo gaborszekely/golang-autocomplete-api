@@ -1,6 +1,6 @@
 # golang-autocomplete-api
 
-AutoComplete API is a packaged front and back-end software solution that can be integrated into existing web applications for intelligent autocompletion. The API tracks user typing and behavior, and builds a list of common words and phrases utilized by the user. In the background, the server builds up a Trie data structure using a MongoDB non-relational data store which can be rapidly queried to provide intelligent suggestion.
+AutoComplete API is a packaged front and back-end software solution that can be integrated into existing web applications for intelligent autocompletion. The API tracks user typing and behavior, and builds a list of common phrases utilized by the user. In the background, the server builds a Trie data structure using a non-relational data store which can be rapidly queried to provide intelligent language suggestion.
 
 The API exposes a single endpoint:
 
